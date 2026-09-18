@@ -1,4 +1,4 @@
-#include <nan.h>
+#include <napi.h>
 #include <string.h>
 
 extern "C" {

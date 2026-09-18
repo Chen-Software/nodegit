@@ -3,7 +3,7 @@
 
 #include <functional>
 #include <memory>
-#include <nan.h>
+#include <napi.h>
 #include <uv.h>
 
 #include "async_worker.h"

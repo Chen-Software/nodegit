@@ -3,7 +3,7 @@
 
 #include <map>
 #include <memory>
-#include <nan.h>
+#include <napi.h>
 #include <string>
 #include <uv.h>
 #include <v8.h>

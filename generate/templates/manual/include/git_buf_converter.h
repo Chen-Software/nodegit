@@ -3,7 +3,7 @@
 
 #include <v8.h>
 
-#include "nan.h"
+#include <napi.h>
 #include "git2/buffer.h"
 
 using namespace v8;

@@ -1,7 +1,7 @@
 #ifndef TRACKERWRAP_H
 #define TRACKERWRAP_H
 
-#include <nan.h>
+#include <napi.h>
 #include <memory>
 #include <vector>
 
@@ -11,7 +11,7 @@ namespace nodegit {
   // closing (because their WeakCallback didn't trigger. See
   // https://github.com/nodejs/help/issues/3297).
   // Implementation based on node.js's class RefTracker (napi).
-  class TrackerWrap : public Nan::ObjectWrap {
+  class TrackerWrap {
   public:
     TrackerWrap() = default;
     virtual ~TrackerWrap() = default;

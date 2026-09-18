@@ -4,7 +4,7 @@
 #include <condition_variable>
 #include <memory>
 #include <mutex>
-#include <nan.h>
+#include <napi.h>
 
 #include "lock_master.h"
 #include "nodegit.h"

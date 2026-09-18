@@ -1,7 +1,7 @@
 /**
  * This code is auto-generated; unless you know what you're doing, do not modify!
  **/
-#include <nan.h>
+#include <napi.h>
 #include <node.h>
 #include <string>
 #include <cstring>

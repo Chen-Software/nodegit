@@ -1,7 +1,7 @@
 // generated from struct_header.h
 #ifndef {{ cppClassName|upper }}_H
 #define {{ cppClassName|upper }}_H
-#include <nan.h>
+#include <napi.h>
 #include <string>
 #include <utility>
 

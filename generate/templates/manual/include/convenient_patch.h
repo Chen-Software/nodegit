@@ -1,7 +1,7 @@
 #ifndef CONVENIENTPATCH_H
 #define CONVENIENTPATCH_H
 // generated from class_header.h
-#include <nan.h>
+#include <napi.h>
 #include <string>
 
 #include "async_baton.h"

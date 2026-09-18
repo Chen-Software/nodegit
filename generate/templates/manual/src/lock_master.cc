@@ -1,4 +1,4 @@
-#include <nan.h>
+#include <napi.h>
 #include <git2.h>
 #include <set>
 #include <vector>
