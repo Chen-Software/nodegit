@@ -1,4 +1,4 @@
-#include <nan.h>
+#include <napi.h>
 #include <git2.h>
 #include <set>
 #include <vector>
@@ -35,10 +35,10 @@ namespace nodegit {
     thread_local static LockMasterImpl* currentLockMaster;
 
     // Cleans up any mutexes that are not currently used
-    static NAN_GC_CALLBACK(CleanupMutexes);
+    static void CleanupMutexes();
 
   public:
-    static void InitializeContext();
+    static void InitializeContext(Napi::Env env);
 
     // INSTANCE variables / methods
 
@@ -93,11 +93,11 @@ namespace nodegit {
     return *this;
   }
 
-  void LockMasterImpl::InitializeContext() {
-    Nan::AddGCEpilogueCallback(CleanupMutexes);
+  void LockMasterImpl::InitializeContext(Napi::Env env) {
+    env.AddCleanupHook(CleanupMutexes);
   }
 
-  NAN_GC_CALLBACK(LockMasterImpl::CleanupMutexes) {
+  void LockMasterImpl::CleanupMutexes() {
     std::lock_guard<std::mutex> lock(mapMutex);
 
     for (auto it = mutexes.begin(); it != mutexes.end(); )
@@ -115,8 +115,8 @@ namespace nodegit {
     }
   }
 
-  void LockMaster::InitializeContext() {
-    LockMasterImpl::InitializeContext();
+  void LockMaster::InitializeContext(Napi::Env env) {
+    LockMasterImpl::InitializeContext(env);
   }
 
   std::vector<std::shared_ptr<std::mutex>> LockMasterImpl::GetMutexes(int useCountDelta) {

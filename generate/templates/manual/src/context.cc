@@ -24,13 +24,13 @@ namespace nodegit {
     context->ShutdownThreadPool(std::move(cleanupHandle));
   }
 
-  Context::Context(v8::Isolate *isolate)
-    : isolate(isolate)
-    , threadPool(10, node::GetCurrentEventLoop(isolate), this)
+  Context::Context(Napi::Env env)
+    : env(env),
+      isolate(v8::Isolate::GetCurrent()),
+      threadPool(10, node::GetCurrentEventLoop(isolate), this)
   {
-    Nan::HandleScope scope;
-    v8::Local<v8::Object> storage = Nan::New<v8::Object>();
-    persistentStorage.Reset(storage);
+    Napi::Object storage = Napi::Object::New(env);
+    persistentStorage = Napi::Persistent(storage);
     contexts[isolate] = this;
     new AsyncContextCleanupHandle(isolate, this);
   }
@@ -49,11 +49,9 @@ namespace nodegit {
     return contexts[isolate];
   }
 
-  v8::Local<v8::Value> Context::GetFromPersistent(std::string key) {
-    Nan::EscapableHandleScope scope;
-    v8::Local<v8::Object> storage = Nan::New(persistentStorage);
-    Nan::MaybeLocal<v8::Value> value = Nan::Get(storage, Nan::New(key).ToLocalChecked());
-    return scope.Escape(value.ToLocalChecked());
+  Napi::Value Context::GetFromPersistent(std::string key) {
+    Napi::Object storage = persistentStorage.Value();
+    return storage.Get(key);
   }
 
   void Context::QueueWorker(nodegit::AsyncWorker *worker) {
@@ -66,10 +64,9 @@ namespace nodegit {
     return cleanupItem;
   }
 
-  void Context::SaveToPersistent(std::string key, const v8::Local<v8::Value> &value) {
-    Nan::HandleScope scope;
-    v8::Local<v8::Object> storage = Nan::New(persistentStorage);
-    Nan::Set(storage, Nan::New(key).ToLocalChecked(), value);
+  void Context::SaveToPersistent(std::string key, const Napi::Value &value) {
+    Napi::Object storage = persistentStorage.Value();
+    storage.Set(key, value);
   }
 
   void Context::SaveCleanupHandle(std::string key, std::shared_ptr<CleanupHandle> cleanupItem) {
