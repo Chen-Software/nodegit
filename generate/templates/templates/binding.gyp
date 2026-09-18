@@ -59,7 +59,8 @@
         "<!(node -p \"require('node-addon-api').include_dir\")"
       ],
       "defines": [
-        "NAPI_VERSION=8"
+        "NAPI_VERSION=8",
+        "NODE_ADDON_API_CPP_EXCEPTIONS"
       ],
 
       "cflags": [
@@ -152,10 +153,14 @@
           ]
         }],
         ["OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
+          "cflags_cc": [
+            "-fexceptions"
+          ],
           "conditions": [
             ["<(has_cxxflags) == 0", {
               "cflags_cc": [
-                "-std=c++<(cxx_version)"
+                "-std=c++<(cxx_version)",
+                "-fexceptions"
               ],
             }],
             ["<(is_electron) == 1", {
