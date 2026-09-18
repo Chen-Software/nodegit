@@ -1,4 +1,7 @@
+#include <string_view>
+
 #include <node.h>
+#include <napi.h>
 #include <v8.h>
 
 #include <git2.h>
@@ -26,20 +29,14 @@
 
 using namespace v8;
 
-Local<Value> GetPrivate(Local<Object> object, Local<String> key) {
-  Local<Value> value;
-  Nan::Maybe<bool> result = Nan::HasPrivate(object, key);
-  if (!(result.IsJust() && result.FromJust()))
-    return Local<Value>();
-  if (Nan::GetPrivate(object, key).ToLocal(&value))
-    return value;
-  return Local<Value>();
+Napi::Value GetPrivate(Napi::Object object, Napi::String key) {
+  return object.Get(key);
 }
 
-void SetPrivate(Local<Object> object, Local<String> key, Local<Value> value) {
-  if (value.IsEmpty())
+void SetPrivate(Napi::Object object, Napi::String key, Napi::Value value) {
+  if (value.IsUndefined())
     return;
-  Nan::SetPrivate(object, key, value);
+  object.Set(key, value);
 }
 
 static uv_mutex_t *opensslMutexes;
@@ -68,16 +65,16 @@ void OpenSSL_ThreadSetup() {
 }
 
 // diagnostic function
-NAN_METHOD(GetNumberOfTrackedObjects) {
+Napi::Value GetNumberOfTrackedObjects(const Napi::CallbackInfo& info) {
   nodegit::Context *currentNodeGitContext = nodegit::Context::GetCurrentContext();
   assert (currentNodeGitContext != nullptr);
-  info.GetReturnValue().Set(currentNodeGitContext->TrackerListSize());
+  return Napi::Number::New(info.Env(), currentNodeGitContext->TrackerListSize());
 }
 
 static std::once_flag libraryInitializedFlag;
 static std::mutex libraryInitializationMutex;
 
-NAN_MODULE_INIT(init) {
+Napi::Object init(Napi::Env env, Napi::Object exports) {
   {
     // We only want to do initialization logic once, and we also want to prevent any thread from completely loading
     // the module until initialization has occurred.
@@ -96,31 +93,29 @@ NAN_MODULE_INIT(init) {
   }
 
   // Exports function 'getNumberOfTrackedObjects'
-  Nan::Set(target
-    , Nan::New<v8::String>("getNumberOfTrackedObjects").ToLocalChecked()
-    , Nan::GetFunction(Nan::New<v8::FunctionTemplate>(GetNumberOfTrackedObjects)).ToLocalChecked()
-  );
+  exports.Set("getNumberOfTrackedObjects", Napi::Function::New(env, GetNumberOfTrackedObjects));
 
-  Isolate *isolate = v8::Isolate::GetCurrent();
-  nodegit::Context *nodegitContext = new nodegit::Context(isolate);
+  nodegit::Context *nodegitContext = new nodegit::Context(env);
 
-  Wrapper::InitializeComponent(target, nodegitContext);
-  PromiseCompletion::InitializeComponent(nodegitContext);
+  Wrapper::InitializeComponent(env, exports, nodegitContext);
+  PromiseCompletion::InitializeComponent(env, nodegitContext);
   {% each %}
     {% if type == 'class' %}
-      {{ cppClassName }}::InitializeComponent(target, nodegitContext);
+      {{ cppClassName }}::InitializeComponent(exports, nodegitContext);
     {% elsif type == 'struct' %}
     {% if isReturnable %}
-      {{ cppClassName }}::InitializeComponent(target, nodegitContext);
+      {{ cppClassName }}::InitializeComponent(exports, nodegitContext);
     {% endif %}
     {% endif %}
   {% endeach %}
 
-  ConvenientHunk::InitializeComponent(target, nodegitContext);
-  ConvenientPatch::InitializeComponent(target, nodegitContext);
-  GitFilterRegistry::InitializeComponent(target, nodegitContext);
+  ConvenientHunk::InitializeComponent(exports, nodegitContext);
+  ConvenientPatch::InitializeComponent(exports, nodegitContext);
+  nodegit::GitFilterRegistry::InitializeComponent(exports, nodegitContext);
 
-  nodegit::LockMaster::InitializeContext();
+  nodegit::LockMaster::InitializeContext(env);
+
+  return exports;
 }
 
-NAN_MODULE_WORKER_ENABLED(nodegit, init)
+NODE_API_MODULE(nodegit, init)

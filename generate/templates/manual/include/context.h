@@ -3,10 +3,10 @@
 
 #include <map>
 #include <memory>
-#include <nan.h>
+#include <napi.h>
+#include <node.h>
 #include <string>
 #include <uv.h>
-#include <v8.h>
 
 #include "async_worker.h"
 #include "cleanup_handle.h"
@@ -17,7 +17,7 @@ namespace nodegit {
   class AsyncContextCleanupHandle;
   class Context {
   public:
-    Context(v8::Isolate *isolate);
+    Context(Napi::Env env);
     Context(const Context &) = delete;
     Context(Context &&) = delete;
     Context &operator=(const Context &) = delete;
@@ -27,11 +27,13 @@ namespace nodegit {
 
     static Context *GetCurrentContext();
 
-    v8::Local<v8::Value> GetFromPersistent(std::string key);
+    Napi::Env Env() const { return env; }
+
+    Napi::Value GetFromPersistent(std::string key);
 
     void QueueWorker(nodegit::AsyncWorker *worker);
 
-    void SaveToPersistent(std::string key, const v8::Local<v8::Value> &value);
+    void SaveToPersistent(std::string key, const Napi::Value &value);
 
     void SaveCleanupHandle(std::string key, std::shared_ptr<nodegit::CleanupHandle> cleanupHandle);
 
@@ -41,7 +43,7 @@ namespace nodegit {
 
     void ShutdownThreadPool(std::unique_ptr<AsyncContextCleanupHandle> cleanupHandle);
 
-    inline void LinkTrackerList(nodegit::TrackerWrap::TrackerList *list) {
+    inline void LinkTrackerList(nodegit::TrackerWrap *list) {
       list->Link(&trackerList);
     }
 
@@ -50,6 +52,9 @@ namespace nodegit {
     }
 
   private:
+    // `env` is used for all Napi operations; `isolate` is retained only for the
+    // node::AddEnvironmentCleanupHook C++ API, which requires a v8::Isolate*.
+    Napi::Env env;
     v8::Isolate *isolate;
 
     ThreadPool threadPool;
@@ -58,7 +63,7 @@ namespace nodegit {
     // after the context has been torn down.
     // Often this is used as a context-aware storage cell for `*::InitializeComponent`
     // to store function templates on them.
-    Nan::Global<v8::Object> persistentStorage;
+    Napi::ObjectReference persistentStorage;
 
     std::map<std::string, std::shared_ptr<CleanupHandle>> cleanupHandles;
 
