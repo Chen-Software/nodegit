@@ -57,7 +57,7 @@
       "include_dirs": [
         "vendor/libv8-convert",
         "vendor/libssh2/include",
-        "<!@(node -p \"require('node-addon-api').include\")"
+        "<!(node -e \"require('nan')\")"
       ],
 
       "cflags": [
