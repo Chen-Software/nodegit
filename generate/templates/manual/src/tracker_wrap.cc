@@ -215,16 +215,24 @@ namespace {
 namespace nodegit {
   TrackerWrap* TrackerWrap::UnlinkFirst(TrackerList *listStart) {
     assert(listStart != nullptr);
-    return listStart->m_next == nullptr ? nullptr : listStart->m_next->Unlink();
+    if (listStart->head == nullptr) {
+      return nullptr;
+    }
+
+    TrackerWrap *first = listStart->head;
+    listStart->head = first->m_next;
+    if (listStart->head == nullptr) {
+      listStart->tail = nullptr;
+    }
+
+    return first->Unlink();
   }
 
   int TrackerWrap::SizeFromList(TrackerList *listStart) {
     assert(listStart != nullptr);
-    TrackerList *t {listStart};
     int count {0};
-    while (t->m_next != nullptr) {
+    for (TrackerWrap *t = listStart->head; t != nullptr; t = t->m_next) {
       ++count;
-      t = t->m_next;
     }
     return count;
   }
