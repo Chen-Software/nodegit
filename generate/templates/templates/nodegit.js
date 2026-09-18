@@ -105,9 +105,10 @@ var importExtension = function(name) {
 };
 
 // Load up utils
-rawApi.Utils = {};
-require("./utils/lookup_wrapper");
-require("./utils/shallow_clone");
+rawApi.Utils = {
+  lookupWrapper: require("./utils/lookup_wrapper"),
+  shallowClone: require("./utils/shallow_clone")
+};
 
 // Load up extra types;
 require("./status_file");
