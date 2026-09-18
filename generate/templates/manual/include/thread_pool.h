@@ -3,7 +3,7 @@
 
 #include <functional>
 #include <memory>
-#include <nan.h>
+#include <napi.h>
 #include <uv.h>
 
 #include "async_worker.h"
@@ -56,7 +56,7 @@ namespace nodegit {
       // will ensure that this is set to the AsyncResource belonging to the AsyncWorker.
       // This ensures that any callbacks from libgit2 take the correct AsyncResource
       // when scheduling work on the JS thread.
-      static Nan::AsyncResource *GetCurrentAsyncResource();
+      static Napi::AsyncContext *GetCurrentAsyncResource();
 
       // Same as GetCurrentAsyncResource, except used to ensure callbacks occur
       // in the correct context.
@@ -64,7 +64,7 @@ namespace nodegit {
 
       // Same as GetCurrentAsyncResource, except used for callbacks to store errors
       // for use after completion of async work
-      static Nan::Global<v8::Value> *GetCurrentCallbackErrorHandle();
+      static Napi::Reference<Napi::Value> *GetCurrentCallbackErrorHandle();
 
       // Queues a callback on the loop provided in the constructor
       static void PostCallbackEvent(OnPostCallbackFn onPostCallback);

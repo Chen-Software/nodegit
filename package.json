@@ -35,7 +35,7 @@
     "lib": "./lib"
   },
   "engines": {
-    "node": ">= 20"
+    "node": ">= 22"
   },
   "dependencies": {
     "@mapbox/node-pre-gyp": "^2.0.0",
