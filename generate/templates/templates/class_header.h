@@ -1,6 +1,6 @@
 #ifndef {{ cppClassName|upper }}_H
 #define {{ cppClassName|upper }}_H
-#include <nan.h>
+#include <napi.h>
 #include <string>
 #include <utility>
 #include <algorithm>

@@ -1,7 +1,7 @@
 #ifndef TRACKERWRAP_H
 #define TRACKERWRAP_H
 
-#include <nan.h>
+#include <napi.h>
 #include <memory>
 #include <vector>
 

@@ -1,5 +1,5 @@
 // generated from struct_content.cc
-#include <nan.h>
+#include <napi.h>
 #include <string.h>
 #ifdef WIN32
 #include <windows.h>

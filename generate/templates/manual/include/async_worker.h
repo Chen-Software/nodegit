@@ -1,7 +1,7 @@
 #ifndef NODEGIT_ASYNC_WORKER
 #define NODEGIT_ASYNC_WORKER
 
-#include <nan.h>
+#include <napi.h>
 #include <functional>
 #include <memory>
 #include <vector>

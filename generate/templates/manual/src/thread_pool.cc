@@ -1,4 +1,4 @@
-#include <nan.h>
+#include <napi.h>
 #include "../include/context.h"
 #include "../include/thread_pool.h"
 

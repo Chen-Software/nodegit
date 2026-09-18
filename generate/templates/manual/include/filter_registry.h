@@ -1,6 +1,6 @@
 #ifndef GITFILTERREGISTRY_H
 #define GITFILTERREGISTRY_H
-#include <nan.h>
+#include <napi.h>
 #include <string>
 #include <utility>
 

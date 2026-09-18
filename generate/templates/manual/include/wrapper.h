@@ -8,7 +8,7 @@
 #include <v8.h>
 #include <node.h>
 
-#include "nan.h"
+#include <napi.h>
 #include "context.h"
 
 using namespace node;

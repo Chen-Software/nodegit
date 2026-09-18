@@ -1,7 +1,7 @@
 #ifndef CALLBACK_WRAPPER_H
 #define CALLBACK_WRAPPER_H
 
-#include <nan.h>
+#include <napi.h>
 #include <uv.h>
 #include <memory>
 

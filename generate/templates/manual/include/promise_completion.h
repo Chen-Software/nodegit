@@ -1,7 +1,7 @@
 #ifndef PROMISE_COMPLETION
 #define PROMISE_COMPLETION
 
-#include <nan.h>
+#include <napi.h>
 
 #include "async_baton.h"
 #include "context.h"
