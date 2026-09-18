@@ -35,6 +35,7 @@
         "src/init_ssh2.cc",
         "src/promise_completion.cc",
         "src/wrapper.cc",
+        "src/libcxx_hash_memory_compat.cc",
         "src/functions/copy.cc",
         "src/functions/free.cc",
         "src/cleanup_handle.cc",
