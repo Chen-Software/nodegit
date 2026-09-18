@@ -8,10 +8,8 @@ namespace nodegit {
   Napi::Value safeGetField(Napi::Object containerObj, std::string fieldName);
   inline Napi::Value ToV8(Napi::Env env, int value) { return Napi::Number::New(env, value); }
   inline Napi::Value ToV8(Napi::Env env, unsigned int value) { return Napi::Number::New(env, value); }
-  inline Napi::Value ToV8(Napi::Env env, long value) { return Napi::Number::New(env, value); }
-  inline Napi::Value ToV8(Napi::Env env, unsigned long value) { return Napi::Number::New(env, value); }
-  inline Napi::Value ToV8(Napi::Env env, int64_t value) { return Napi::Number::New(env, value); }
-  inline Napi::Value ToV8(Napi::Env env, uint64_t value) { return Napi::Number::New(env, value); }
+  inline Napi::Value ToV8(Napi::Env env, int64_t value) { return Napi::Number::New(env, static_cast<double>(value)); }
+  inline Napi::Value ToV8(Napi::Env env, uint64_t value) { return Napi::Number::New(env, static_cast<double>(value)); }
   inline Napi::Value ToV8(Napi::Env env, double value) { return Napi::Number::New(env, value); }
   inline Napi::Value ToV8(Napi::Env env, float value) { return Napi::Number::New(env, value); }
   inline Napi::Value ToV8(Napi::Env env, bool value) { return Napi::Boolean::New(env, value); }
