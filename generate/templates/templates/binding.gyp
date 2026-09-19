@@ -58,8 +58,15 @@
         "vendor/libssh2/include",
         "<!(node -p \"require('node-addon-api').include_dir\")"
       ],
+      "cflags!": [
+        "-fno-exceptions"
+      ],
+      "cflags_cc!": [
+        "-fno-exceptions"
+      ],
       "defines": [
-        "NAPI_VERSION=10"
+        "NAPI_VERSION=10",
+        "NAPI_CPP_EXCEPTIONS"
       ],
 
       "cflags": [
