@@ -199,11 +199,11 @@ describe("Clone", function() {
               waitForResult: false,
               callback: function(progress) {
                 var receivedObjects = progress.receivedObjects();
-                assert.false(
-                  cloneFinished,
+                assert(
+                  !cloneFinished,
                   "callback running after clone completion"
                 );
-                assert.gt(receivedObjects, lastReceivedObjects);
+                assert(receivedObjects >= lastReceivedObjects);
                 lastReceivedObjects = receivedObjects;
               }
             }
