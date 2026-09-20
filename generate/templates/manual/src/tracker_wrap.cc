@@ -238,6 +238,7 @@ namespace nodegit {
     : Napi::ObjectWrap<TrackerWrap>(info) {
   }
 
+
   TrackerWrap* TrackerWrap::UnlinkFirst(TrackerList *listStart) {
     assert(listStart != nullptr);
     if (listStart->head == nullptr) {

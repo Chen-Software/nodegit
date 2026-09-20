@@ -20,7 +20,8 @@
       "target_name": "nodegit",
 
       "dependencies": [
-        "vendor/libgit2.gyp:libgit2"
+        "vendor/libgit2.gyp:libgit2",
+        "<!(node -p \"require('node-addon-api').targets\"):node_addon_api"
       ],
 
       "variables": {

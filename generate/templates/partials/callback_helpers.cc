@@ -59,14 +59,14 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(void 
     args.push_back(argv[i]);
   }
   napi_value recv = env.Global();
-  Napi::Value result = callback->MakeCallback(recv, args, *baton->GetAsyncResource());
+  Napi::Value result = nodegit::CallJSFunction(env, callback, recv, args);
 
   if(PromiseCompletion::ForwardIfPromise(result, baton, {{ cppFunctionName }}_{{ cbFunction.name }}_promiseCompleted)) {
     return;
   }
 
   {% each cbFunction|returnsInfo false true as _return %}
-    if (env.IsExceptionPending() || (result.IsObject() && result.As<Napi::Object>().InstanceOf(env.Global().Get("Error").As<Napi::Function>()))) {
+    if (env.IsExceptionPending() || nodegit::IsError(env, result)) {
       baton->result = {{ cbFunction.return.error }};
     }
     else if (!result.IsNull() && !result.IsUndefined()) {
@@ -95,12 +95,12 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(void 
 
 void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_promiseCompleted(bool isFulfilled, nodegit::AsyncBaton *_baton, Napi::Value result) {
   {{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton* baton = static_cast<{{ cppFunctionName }}_{{ cbFunction.name|titleCase }}Baton*>(_baton);
-  Napi::Env env = baton->GetAsyncResource()->Env();
+  Napi::Env env = result.Env();
   Napi::HandleScope scope(env);
 
   if (isFulfilled) {
     {% each cbFunction|returnsInfo false true as _return %}
-      if (env.IsExceptionPending() || (result.IsObject() && result.As<Napi::Object>().InstanceOf(env.Global().Get("Error").As<Napi::Function>()))) {
+      if (env.IsExceptionPending() || nodegit::IsError(env, result)) {
         baton->result = {{ cbFunction.return.error }};
       }
       else if (!result.IsNull() && !result.IsUndefined()) {
