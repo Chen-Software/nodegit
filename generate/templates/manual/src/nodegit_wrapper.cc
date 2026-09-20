@@ -55,6 +55,7 @@ void NodeGitWrapper<Traits>::InitializeFromRaw(cType *raw, bool selfFreeing, Nap
     } else {
       SetNativeOwners(owner);
       this->owner = Napi::Persistent(owner);
+      this->owner.SuppressDestruct();
       this->raw = raw;
     }
   } else {
@@ -165,7 +166,9 @@ template<typename Traits>
 void NodeGitWrapper<Traits>::Reference() {
   Ref();
   for (auto &i : referenceCallbacks) {
-    i.second();
+    if (i.second) {
+      i.second();
+    }
   }
 }
 
@@ -173,7 +176,9 @@ template<typename Traits>
 void NodeGitWrapper<Traits>::Unreference() {
   Unref();
   for (auto &i : unreferenceCallbacks) {
-    i.second();
+    if (i.second) {
+      i.second();
+    }
   }
 }
 

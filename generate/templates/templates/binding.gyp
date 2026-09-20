@@ -200,6 +200,12 @@
                 "<(electron_openssl_root)/include"
               ],
             }],
+            ["<(is_electron) != 1", {
+              "libraries": [
+                "-lcrypto",
+                "-lssl"
+              ]
+            }],
           ],
         }],
         [
