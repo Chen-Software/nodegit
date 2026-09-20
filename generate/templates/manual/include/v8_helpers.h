@@ -8,7 +8,7 @@
 namespace nodegit {
   Napi::Value safeGetField(Napi::Object containerObj, std::string fieldName);
 
-  template <typename T, typename std::enable_if<std::is_arithmetic<T>::value && !std::is_same<T, bool>::value, int>::type = 0>
+  template <typename T, typename std::enable_if<(std::is_arithmetic<T>::value || std::is_enum<T>::value) && !std::is_same<T, bool>::value, int>::type = 0>
   inline Napi::Value ToV8(Napi::Env env, T value) {
     return Napi::Number::New(env, static_cast<double>(value));
   }
