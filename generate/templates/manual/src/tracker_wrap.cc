@@ -1,5 +1,6 @@
 #include "../include/tracker_wrap.h"
 
+#include <cassert>
 #include <unordered_set>
 #include <unordered_map>
 
@@ -236,6 +237,7 @@ namespace nodegit {
   TrackerWrap::TrackerWrap(const Napi::CallbackInfo& info)
     : Napi::ObjectWrap<TrackerWrap>(info) {
   }
+
 
   TrackerWrap* TrackerWrap::UnlinkFirst(TrackerList *listStart) {
     assert(listStart != nullptr);

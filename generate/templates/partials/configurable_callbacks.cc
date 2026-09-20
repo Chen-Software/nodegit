@@ -25,7 +25,16 @@
           new {{ field.name|titleCase }}Baton({{ field.return.noResults }});
 
         {% each field.args|argsInfo as arg %}
-          baton->{{ arg.name }} = {{ arg.name }};
+          {% if arg.cppClassName == "GitIndexerProgress" %}
+            if ({{ arg.name }}) {
+              baton->stats_copy = *{{ arg.name }};
+              baton->{{ arg.name }} = &baton->stats_copy;
+            } else {
+              baton->{{ arg.name }} = nullptr;
+            }
+          {% else %}
+            baton->{{ arg.name }} = {{ arg.name }};
+          {% endif %}
         {% endeach %}
 
         Configurable{{ cppClassName }}* instance = {{ field.jsFunctionName }}_getInstanceFromBaton(baton);
@@ -72,17 +81,19 @@
 
       void Configurable{{ cppClassName }}::{{ field.jsFunctionName }}_async(void *untypedBaton) {
         {{ field.name|titleCase }}Baton* baton = static_cast<{{ field.name|titleCase }}Baton*>(untypedBaton);
-        Napi::Env env = baton->GetAsyncResource()->Env();
-        Napi::HandleScope scope(env);
         Configurable{{ cppClassName }}* instance = {{ field.jsFunctionName }}_getInstanceFromBaton(baton);
 
-        if (instance->{{ field.jsFunctionName }}.GetCallback()->IsEmpty()) {
+        if (!instance || !instance->{{ field.jsFunctionName }}.GetCallback() || instance->{{ field.jsFunctionName }}.GetCallback()->IsEmpty()) {
           {% if field.return.type == "int" %}
             baton->result = baton->defaultResult; // no results acquired
           {% endif %}
           baton->Done();
           return;
         }
+
+        Napi::FunctionReference *callback = instance->{{ field.jsFunctionName }}.GetCallback();
+        Napi::Env env = callback->Env();
+        Napi::HandleScope scope(env);
 
         {% each field.args|callbackArgsInfo as arg %}
         {% if arg.cppClassName == "Array" %}
@@ -124,7 +135,7 @@
           args.push_back(argv[i]);
         }
         napi_value recv = env.Global();
-        Napi::Value result = instance->{{ field.jsFunctionName }}.GetCallback()->MakeCallback(recv, args, *baton->GetAsyncResource());
+        Napi::Value result = nodegit::CallJSFunction(env, callback, recv, args);
 
         if (PromiseCompletion::ForwardIfPromise(result, baton, Configurable{{ cppClassName }}::{{ field.jsFunctionName }}_promiseCompleted)) {
           return;
@@ -134,7 +145,7 @@
           baton->Done();
         {% else %}
           {% each field|returnsInfo false true as _return %}
-            if (env.IsExceptionPending() || (result.IsObject() && result.As<Napi::Object>().InstanceOf(env.Global().Get("Error").As<Napi::Function>()))) {
+            if (env.IsExceptionPending() || nodegit::IsError(env, result)) {
               baton->result = {{ field.return.error }};
             }
             else if (!result.IsNull() && !result.IsUndefined()) {
@@ -167,14 +178,14 @@
 
       void Configurable{{ cppClassName }}::{{ field.jsFunctionName }}_promiseCompleted(bool isFulfilled, nodegit::AsyncBaton *_baton, Napi::Value result) {
         {{ field.name|titleCase }}Baton* baton = static_cast<{{ field.name|titleCase }}Baton*>(_baton);
-        Napi::Env env = baton->GetAsyncResource()->Env();
+        Napi::Env env = result.Env();
         Napi::HandleScope scope(env);
         {% if field.return.type == "void" %}
           baton->Done();
         {% else %}
           if (isFulfilled) {
             {% each field|returnsInfo false true as _return %}
-              if (env.IsExceptionPending() || (result.IsObject() && result.As<Napi::Object>().InstanceOf(env.Global().Get("Error").As<Napi::Function>()))) {
+              if (env.IsExceptionPending() || nodegit::IsError(env, result)) {
                 baton->result = {{ field.return.error }};
               }
               else if (!result.IsNull() && !result.IsUndefined()) {

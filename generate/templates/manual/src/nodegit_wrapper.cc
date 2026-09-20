@@ -12,7 +12,7 @@ NodeGitWrapper<Traits>::NodeGitWrapper(const Napi::CallbackInfo& info)
 
   if (info.Length() > 0 && info[0].IsExternal()) {
     cType *raw = static_cast<cType*>(info[0].As<Napi::External<void>>().Data());
-    bool selfFreeing = info[1].ToBoolean();
+    bool selfFreeing = info[1].ToBoolean().Value();
     Napi::Object owner = (info.Length() >= 3 && info[2].IsObject())
       ? info[2].As<Napi::Object>()
       : Napi::Object();
@@ -111,9 +111,23 @@ void NodeGitWrapper<Traits>::SetNativeOwners(Napi::Object owners) {
 }
 
 template<typename Traits>
-Napi::Value NodeGitWrapper<Traits>::New(const cType *raw, bool selfFreeing, Napi::Object owner) {
-  Napi::Env env = nodegit::Context::GetCurrentContext()->Env();
+Napi::Value NodeGitWrapper<Traits>::New(const cType *raw, bool selfFreeing, Napi::Object owner, nodegit::Context *nodegitContext) {
+  if (!nodegitContext) {
+    nodegitContext = nodegit::Context::GetCurrentContext();
+  }
+  if (!nodegitContext) {
+    return Napi::Value();
+  }
+  Napi::Env env = nodegitContext->Env();
+  if (!raw || env.IsExceptionPending()) {
+    return env.Null();
+  }
   Napi::EscapableHandleScope scope(env);
+
+  Napi::Value tmplVal = nodegitContext->GetFromPersistent(std::string(Traits::className()) + "::Template");
+  if (tmplVal.IsEmpty() || !tmplVal.IsFunction() || env.IsExceptionPending()) {
+    return env.Null();
+  }
 
   std::vector<napi_value> argv;
   argv.push_back(Napi::External<void>::New(env, (void *)raw));
@@ -122,10 +136,12 @@ Napi::Value NodeGitWrapper<Traits>::New(const cType *raw, bool selfFreeing, Napi
     argv.push_back(owner);
   }
 
-  nodegit::Context *nodegitContext = nodegit::Context::GetCurrentContext();
-  Napi::Function constructor_template = nodegitContext->GetFromPersistent(
-    std::string(Traits::className()) + "::Template").As<Napi::Function>();
-  return scope.Escape(constructor_template.New(argv));
+  napi_value result = nullptr;
+  napi_status status = napi_new_instance(env, tmplVal.As<Napi::Function>(), argv.size(), argv.data(), &result);
+  if (status != napi_ok || !result) {
+    return env.Null();
+  }
+  return scope.Escape(Napi::Value(env, result));
 }
 
 template<typename Traits>

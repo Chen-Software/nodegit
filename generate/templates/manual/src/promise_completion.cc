@@ -26,21 +26,22 @@ PromiseCompletion::PromiseCompletion(const Napi::CallbackInfo& info)
 
 bool PromiseCompletion::ForwardIfPromise(Napi::Value result, nodegit::AsyncBaton *baton, Callback callback)
 {
+  if (result.IsEmpty() || !result.IsObject() || result.Env().IsExceptionPending()) {
+    return false;
+  }
+
   // check if the result is a promise
-  if (!result.IsEmpty() && result.IsObject()) {
-    Napi::Value thenProp = result.As<Napi::Object>().Get("then");
-    if (!thenProp.IsEmpty() && thenProp.IsFunction()) {
-      // we can be reasonably certain that the result is a promise
+  Napi::Value thenProp = result.As<Napi::Object>().Get("then");
+  if (!thenProp.IsEmpty() && !thenProp.IsUndefined() && !result.Env().IsExceptionPending() && thenProp.IsFunction()) {
+    // we can be reasonably certain that the result is a promise
 
-      // create a new instance of PromiseCompletion
-      nodegit::Context *nodegitContext = nodegit::Context::GetCurrentContext();
-      Napi::Function constructorFunc = nodegitContext->GetFromPersistent("PromiseCompletion::Template").As<Napi::Function>();
-      Napi::Object object = constructor.New({});
-      PromiseCompletion *promiseCompletion = PromiseCompletion::Unwrap(object);
-      promiseCompletion->Setup(thenProp.As<Napi::Function>(), result, baton, callback);
+    // create a new instance of PromiseCompletion
+    nodegit::Context *nodegitContext = nodegit::Context::GetCurrentContext();
+    Napi::Object object = constructor.New({});
+    PromiseCompletion *promiseCompletion = PromiseCompletion::Unwrap(object);
+    promiseCompletion->Setup(thenProp.As<Napi::Function>(), result, baton, callback);
 
-      return true;
-    }
+    return true;
   }
 
   return false;

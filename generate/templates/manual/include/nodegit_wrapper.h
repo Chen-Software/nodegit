@@ -76,7 +76,7 @@ protected:
   static void InitializeTemplate(Napi::Object tpl);
 
 public:
-  static Napi::Value New(const cType *raw, bool selfFreeing, Napi::Object owner = Napi::Object());
+  static Napi::Value New(const cType *raw, bool selfFreeing, Napi::Object owner = Napi::Object(), nodegit::Context *nodegitContext = nullptr);
 
   template<typename T>
   static T* Unwrap(Napi::Object object) {

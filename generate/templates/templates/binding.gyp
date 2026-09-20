@@ -19,7 +19,8 @@
       "target_name": "nodegit",
 
       "dependencies": [
-        "vendor/libgit2.gyp:libgit2"
+        "vendor/libgit2.gyp:libgit2",
+        "<!(node -p \"require('node-addon-api').targets\"):node_addon_api"
       ],
 
       "variables": {
@@ -55,8 +56,7 @@
 
       "include_dirs": [
         "vendor/libv8-convert",
-        "vendor/libssh2/include",
-        "<!(node -p \"require('node-addon-api').include_dir\")"
+        "vendor/libssh2/include"
       ],
       "defines": [
         "NAPI_VERSION=10"

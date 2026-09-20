@@ -106,6 +106,9 @@ public:
           public:
             {% each field.args|argsInfo as arg %}
               {{ arg.cType }} {{ arg.name }};
+              {% if arg.cppClassName == "GitIndexerProgress" %}
+                git_indexer_progress stats_copy;
+              {% endif %}
             {% endeach %}
 
             {{ field.name|titleCase }}Baton()
@@ -117,6 +120,9 @@ public:
           public:
             {% each field.args|argsInfo as arg %}
               {{ arg.cType }} {{ arg.name }};
+              {% if arg.cppClassName == "GitIndexerProgress" %}
+                git_indexer_progress stats_copy;
+              {% endif %}
             {% endeach %}
 
             {{ field.name|titleCase }}Baton(const {{ field.return.type }} &defaultResult)
