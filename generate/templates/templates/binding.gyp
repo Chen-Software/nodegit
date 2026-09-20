@@ -155,10 +155,13 @@
           ]
         }],
         ["OS=='linux' or OS.endswith('bsd') or <(is_IBMi) == 1", {
+        "cflags!": [ "-fno-exceptions" ],
+        "cflags_cc!": [ "-fno-exceptions" ],
           "conditions": [
             ["<(has_cxxflags) == 0", {
               "cflags_cc": [
-                "-std=c++<(cxx_version)"
+              "-std=c++<(cxx_version)",
+              "-fexceptions"
               ],
             }],
             ["<(is_electron) == 1", {
