@@ -1,5 +1,6 @@
 #include <string_view>
 
+#include <openssl/opensslv.h>
 #include <node.h>
 #include <napi.h>
 #include <v8.h>
@@ -89,8 +90,10 @@ Napi::Object init(Napi::Env env, Napi::Object exports) {
   nodegit::LockMaster::InitializeContext(env);
 
   env.AddCleanupHook([]() {
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
     CRYPTO_set_locking_callback(NULL);
     CRYPTO_THREADID_set_callback(NULL);
+#endif
   });
 
   return exports;
