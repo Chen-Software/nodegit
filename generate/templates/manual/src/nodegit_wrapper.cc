@@ -83,9 +83,7 @@ NodeGitWrapper<Traits>::~NodeGitWrapper() {
 }
 
 template<typename Traits>
-NodeGitWrapper<Traits>::~NodeGitWrapper() {
-  Unlink();
-  DestroyNative();
+void NodeGitWrapper<Traits>::DestroyNative() {
 }
 
 template<typename Traits>

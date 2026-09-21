@@ -89,8 +89,10 @@ Napi::Object init(Napi::Env env, Napi::Object exports) {
   nodegit::LockMaster::InitializeContext(env);
 
   env.AddCleanupHook([]() {
+#if defined(OPENSSL_VERSION_NUMBER) && OPENSSL_VERSION_NUMBER < 0x10100000L
     CRYPTO_set_locking_callback(NULL);
     CRYPTO_THREADID_set_callback(NULL);
+#endif
   });
 
   return exports;
