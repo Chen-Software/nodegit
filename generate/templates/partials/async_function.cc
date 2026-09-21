@@ -14,6 +14,12 @@ Napi::Value {{ cppClassName }}::{{ cppFunctionName }}(const Napi::CallbackInfo& 
   baton->error = NULL;
 
   {%each args|argsInfo as arg %}
+    {%if arg.isReturn %}
+      baton->{{ arg.name }} = NULL;
+    {%endif%}
+  {%endeach%}
+
+  {%each args|argsInfo as arg %}
     {%if arg.globalPayload %}
       {{ cppFunctionName }}_globalPayload* globalPayload = new {{ cppFunctionName }}_globalPayload;
     {%endif%}

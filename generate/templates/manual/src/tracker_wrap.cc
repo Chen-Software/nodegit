@@ -1,5 +1,6 @@
 #include "../include/tracker_wrap.h"
 
+#include <cassert>
 #include <unordered_set>
 #include <unordered_map>
 
@@ -35,7 +36,10 @@ namespace {
    * Frees the memory of the TrackerWrap pointer it holds.
    */
   TrackerWrapTreeNode::~TrackerWrapTreeNode() {
-    delete m_trackerWrap;
+    if (m_trackerWrap != nullptr) {
+      m_trackerWrap->Unlink();
+      m_trackerWrap->DestroyNative();
+    }
   }
 
   /**
@@ -95,7 +99,7 @@ namespace {
     using TrackerWrapTreeNodeMap = std::unordered_map<nodegit::TrackerWrap*, std::unique_ptr<TrackerWrapTreeNode>>;
 
     TrackerWrapTreeNodeMap m_mapTrackerWrapNode {};
-    std::vector<TrackerWrapTreeNode *> m_roots {};
+    std::vector<nodegit::TrackerWrap *> m_roots {};
   };
 
   /**
@@ -141,7 +145,7 @@ namespace {
     // if trackerWrap has no owners, add it as a root node
     const std::vector<nodegit::TrackerWrap*> *owners = trackerWrap->GetTrackerWrapOwners();
     if (owners == nullptr) {
-      m_roots.push_back(addedNode);
+      m_roots.push_back(trackerWrap);
     }
     else {
       // add addedNode's parents and link them with this child
@@ -204,8 +208,11 @@ namespace {
    * Deletes all the trees held, in a children-first way.
    */
   void TrackerWrapTrees::freeAllTreesChildrenFirst() {
-    for (TrackerWrapTreeNode *root : m_roots) {
-      deleteTree(root);
+    for (nodegit::TrackerWrap *rootWrap : m_roots) {
+      auto it = m_mapTrackerWrapNode.find(rootWrap);
+      if (it != m_mapTrackerWrapNode.end()) {
+        deleteTree(it->second.get());
+      }
     }
     m_roots.clear();
   }

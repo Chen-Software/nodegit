@@ -113,6 +113,11 @@ Napi::Object init(Napi::Env env, Napi::Object exports) {
 
   nodegit::LockMaster::InitializeContext(env);
 
+  env.AddCleanupHook([]() {
+    CRYPTO_set_locking_callback(NULL);
+    CRYPTO_THREADID_set_callback(NULL);
+  });
+
   return exports;
 }
 

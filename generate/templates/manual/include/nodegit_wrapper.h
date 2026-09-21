@@ -65,6 +65,8 @@ protected:
   NodeGitWrapper &operator=(NodeGitWrapper &&) = delete;
   ~NodeGitWrapper();
 
+  virtual void DestroyNative() override;
+
   void InitializeFromRaw(cType *raw, bool selfFreeing, Napi::Object owner);
 
   static Napi::Value JSNewFunction(const Napi::CallbackInfo& info);

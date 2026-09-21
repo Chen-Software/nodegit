@@ -124,7 +124,16 @@
           args.push_back(argv[i]);
         }
         napi_value recv = env.Global();
-        Napi::Value result = instance->{{ field.jsFunctionName }}.GetCallback()->MakeCallback(recv, args, *baton->GetAsyncResource());
+        Napi::Value result;
+        try {
+          result = instance->{{ field.jsFunctionName }}.GetCallback()->MakeCallback(recv, args, *baton->GetAsyncResource());
+        } catch (const Napi::Error &e) {
+          {% if field.return.type != "void" %}
+            baton->result = {{ field.return.error }};
+          {% endif %}
+          baton->Done();
+          return;
+        }
 
         if (PromiseCompletion::ForwardIfPromise(result, baton, Configurable{{ cppClassName }}::{{ field.jsFunctionName }}_promiseCompleted)) {
           return;

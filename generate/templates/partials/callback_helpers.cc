@@ -59,7 +59,14 @@ void {{ cppClassName }}::{{ cppFunctionName }}_{{ cbFunction.name }}_async(void 
     args.push_back(argv[i]);
   }
   napi_value recv = env.Global();
-  Napi::Value result = callback->MakeCallback(recv, args, *baton->GetAsyncResource());
+  Napi::Value result;
+  try {
+    result = callback->MakeCallback(recv, args, *baton->GetAsyncResource());
+  } catch (const Napi::Error &e) {
+    baton->result = {{ cbFunction.return.error }};
+    baton->Done();
+    return;
+  }
 
   if(PromiseCompletion::ForwardIfPromise(result, baton, {{ cppFunctionName }}_{{ cbFunction.name }}_promiseCompleted)) {
     return;

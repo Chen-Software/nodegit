@@ -4,12 +4,14 @@ namespace nodegit {
   AsyncWorker::AsyncWorker(Napi::FunctionReference *callback, const char *resourceName, std::map<std::string, std::shared_ptr<nodegit::CleanupHandle>> &_cleanupHandles)
     : callback(callback),
       asyncResource(new Napi::AsyncContext(callback->Env(), resourceName)),
-      cleanupHandles(_cleanupHandles)
+      cleanupHandles(_cleanupHandles),
+      persistentStorage(Napi::Persistent(Napi::Object::New(callback->Env())))
   {}
 
   AsyncWorker::AsyncWorker(Napi::FunctionReference *callback, const char *resourceName)
     : callback(callback),
-      asyncResource(new Napi::AsyncContext(callback->Env(), resourceName))
+      asyncResource(new Napi::AsyncContext(callback->Env(), resourceName)),
+      persistentStorage(Napi::Persistent(Napi::Object::New(callback->Env())))
   {}
 
   AsyncWorker::~AsyncWorker() {

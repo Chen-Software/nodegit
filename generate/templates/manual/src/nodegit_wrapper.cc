@@ -64,16 +64,22 @@ void NodeGitWrapper<Traits>::InitializeFromRaw(cType *raw, bool selfFreeing, Nap
 }
 
 template<typename Traits>
-NodeGitWrapper<Traits>::~NodeGitWrapper() {
-  Unlink();
-  if (Traits::isFreeable && selfFreeing) {
+void NodeGitWrapper<Traits>::DestroyNative() {
+  if (Traits::isFreeable && selfFreeing && raw != NULL) {
     Traits::free(raw);
     SelfFreeingInstanceCount--;
     raw = NULL;
   }
-  else if (!selfFreeing) {
+  else if (!selfFreeing && raw != NULL) {
     --NonSelfFreeingConstructedCount;
+    raw = NULL;
   }
+}
+
+template<typename Traits>
+NodeGitWrapper<Traits>::~NodeGitWrapper() {
+  Unlink();
+  DestroyNative();
 }
 
 template<typename Traits>

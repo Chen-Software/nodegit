@@ -36,8 +36,9 @@ namespace nodegit {
   }
 
   Context::~Context() {
-    nodegit::TrackerWrap::DeleteFromList(&trackerList);
+    // nodegit::TrackerWrap::DeleteFromList(&trackerList);
     contexts.erase(isolate);
+    persistentStorage.Reset();
   }
 
   std::shared_ptr<CleanupHandle> Context::GetCleanupHandle(std::string key) {

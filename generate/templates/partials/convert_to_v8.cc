@@ -86,7 +86,7 @@
     for (unsigned int i = 0; i < {{ cType|toSizeOfArray }}; i++) {
   {% endif %}
   if ({{ cType|asElementPointer parsedName }} != NULL) {
-    {% if hasOwner %}
+    {% if hasOwner | or ownedByThis %}
       Napi::Array owners = Napi::Array::New(env, 0);
       {% if ownedBy %}
         {% if isAsync %}
@@ -110,7 +110,7 @@
           owners.Length(),
           {{= ownerFn.singletonCppClassName =}}::New(
             {{= ownerFn.name =}}({{ cType|asElementPointer parsedName }}),
-            true
+            false
           ).As<Napi::Value>()
         );
       {% endif %}
@@ -121,7 +121,7 @@
       v8ConversionSlot = {{ cppClassName }}::New(
         {{ cType|asElementPointer parsedName }},
         {{ selfFreeing|toBool }}
-        {% if hasOwner %}
+        {% if hasOwner | or ownedByThis %}
           , owners
         {% endif %}
       );

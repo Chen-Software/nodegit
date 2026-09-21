@@ -15,7 +15,7 @@
     return info.Env().Undefined();
   }
         {%elsif arg.cppClassName == "GitStrarray" %}
-  if (info.Length() == {{arg.jsArg}} || !info[{{arg.jsArg}}].IsArray()) {
+  if (info.Length() == {{arg.jsArg}} || (!info[{{arg.jsArg}}].IsArray() && !info[{{arg.jsArg}}].IsString() && !info[{{arg.jsArg}}].IsObject())) {
     Napi::Error::New(info.Env(), "Array, String Object, or string {{arg.name}} is required.").ThrowAsJavaScriptException();
     return info.Env().Undefined();
   }

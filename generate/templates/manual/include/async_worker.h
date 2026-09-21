@@ -116,13 +116,14 @@ namespace nodegit {
     }
 
     void SaveToPersistent(const char *label, const Napi::Value &value) {
-      persistentStorage[label] = Napi::Reference<Napi::Value>::New(value);
+      if (!persistentStorage.IsEmpty()) {
+        persistentStorage.Value().Set(label, value);
+      }
     }
 
     Napi::Value GetFromPersistent(const char *label) {
-      auto it = persistentStorage.find(label);
-      if (it != persistentStorage.end()) {
-        return it->second.Value();
+      if (!persistentStorage.IsEmpty()) {
+        return persistentStorage.Value().Get(label);
       }
       return callback->Env().Undefined();
     }
@@ -137,7 +138,7 @@ namespace nodegit {
     std::vector<std::function<void()>> cleanupCalls;
     bool isCancelled = false;
     std::string errorMessage;
-    std::map<std::string, Napi::Reference<Napi::Value>> persistentStorage;
+    Napi::ObjectReference persistentStorage;
   };
 }
 

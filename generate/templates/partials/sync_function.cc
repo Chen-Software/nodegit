@@ -94,6 +94,11 @@ Napi::Value {{ cppClassName }}::{{ cppFunctionName }}(const Napi::CallbackInfo& 
         NodeGitWrapper<{{ cppClassName }}Traits>::Unwrap<{{ cppClassName }}>(info.This().As<Napi::Object>())->ClearValue();
       } // lock master scope end
     {%endif%}
+    {%if cFunctionName == "git_branch_delete" %}
+      if (result == GIT_OK) {
+        NodeGitWrapper<GitRefsTraits>::Unwrap<GitRefs>(info[0].As<Napi::Object>())->ClearValue();
+      }
+    {%endif%}
 
 
     {%each args|argsInfo as arg %}
