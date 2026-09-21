@@ -4,6 +4,8 @@
 #include <napi.h>
 #include <v8.h>
 
+#include <openssl/opensslv.h>
+#include <openssl/crypto.h>
 #include <git2.h>
 #include <map>
 #include <algorithm>
@@ -89,8 +91,10 @@ Napi::Object init(Napi::Env env, Napi::Object exports) {
   nodegit::LockMaster::InitializeContext(env);
 
   env.AddCleanupHook([]() {
+#if OPENSSL_VERSION_NUMBER < 0x10100000L
     CRYPTO_set_locking_callback(NULL);
     CRYPTO_THREADID_set_callback(NULL);
+#endif
   });
 
   return exports;
