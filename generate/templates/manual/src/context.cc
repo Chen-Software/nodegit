@@ -16,11 +16,14 @@ namespace nodegit {
 
   void AsyncContextCleanupHandle::AsyncCleanupContext(void *data) {
     std::unique_ptr<AsyncContextCleanupHandle> cleanupHandle(static_cast<AsyncContextCleanupHandle *>(data));
+    Napi::Env env = cleanupHandle->context->Env();
+    Napi::HandleScope scope(env);
     // N-API's cleanup hook cannot be deferred, so ShutdownThreadPool has to
     // complete - including joining every worker thread - before we return.
     // The handle released at the end of this scope owns the Context, so the
     // thread pool is destroyed only after it is done shutting itself down.
     cleanupHandle->context->ShutdownThreadPool();
+    cleanupHandle.reset();
   }
 
   Context::Context(Napi::Env env)
