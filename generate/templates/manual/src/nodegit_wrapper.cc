@@ -65,7 +65,7 @@ void NodeGitWrapper<Traits>::InitializeFromRaw(cType *raw, bool selfFreeing, Nap
 }
 
 template<typename Traits>
-NodeGitWrapper<Traits>::~NodeGitWrapper() {
+void NodeGitWrapper<Traits>::DestroyNative() {
   if (owner) {
     owner->SuppressDestruct();
     owner.reset();
@@ -84,7 +84,6 @@ NodeGitWrapper<Traits>::~NodeGitWrapper() {
 
 template<typename Traits>
 NodeGitWrapper<Traits>::~NodeGitWrapper() {
-  Unlink();
   DestroyNative();
 }
 
