@@ -9,8 +9,7 @@ namespace nodegit {
 
   AsyncWorker::AsyncWorker(Napi::FunctionReference *callback, const char *resourceName)
     : callback(callback),
-      asyncResource(new Napi::AsyncContext(callback->Env(), resourceName)),
-      persistentStorage(Napi::Persistent(Napi::Object::New(callback->Env())))
+      asyncResource(new Napi::AsyncContext(callback->Env(), resourceName))
   {}
 
   AsyncWorker::~AsyncWorker() {
