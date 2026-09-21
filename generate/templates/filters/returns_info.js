@@ -25,7 +25,7 @@ module.exports = function(fn, argReturnsOnly, isAsync) {
 
     var return_info = {};
 
-    return_info.__proto__ = arg;
+    Object.setPrototypeOf(return_info, arg);
 
     return_info.isAsync = isAsync;
     return_info.parsedName = isAsync ? "baton->" + return_info.name : return_info.name;
@@ -66,7 +66,7 @@ module.exports = function(fn, argReturnsOnly, isAsync) {
       && fn.return.cType != "void") {
     var return_info = {};
 
-    return_info.__proto__ = fn.return;
+    Object.setPrototypeOf(return_info, fn.return);
 
     return_info.isAsync = isAsync;
     return_info.hasOwner = !return_info.selfOwned &&

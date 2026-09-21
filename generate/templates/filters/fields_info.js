@@ -12,7 +12,7 @@ module.exports = function(fields) {
   fields.forEach(function (field, index){
     var fieldInfo = {};
 
-    fieldInfo.__proto__ = field;
+    Object.setPrototypeOf(fieldInfo, field);
 
     fieldInfo.index = index;
     fieldInfo.parsedName = field.name || "result";
