@@ -238,6 +238,14 @@ namespace nodegit {
     : Napi::ObjectWrap<TrackerWrap>(info) {
   }
 
+  TrackerWrap::~TrackerWrap() {
+    this->SuppressDestruct();
+    if (this->_ref != nullptr) {
+      napi_delete_reference(this->_env, this->_ref);
+      this->_ref = nullptr;
+    }
+  }
+
   TrackerWrap* TrackerWrap::UnlinkFirst(TrackerList *listStart) {
     assert(listStart != nullptr);
     if (listStart->head == nullptr) {

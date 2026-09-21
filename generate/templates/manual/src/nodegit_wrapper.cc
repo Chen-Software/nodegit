@@ -54,8 +54,8 @@ void NodeGitWrapper<Traits>::InitializeFromRaw(cType *raw, bool selfFreeing, Nap
       selfFreeing = true;
     } else {
       SetNativeOwners(owner);
-      this->owner = Napi::Persistent(owner);
-      this->owner.SuppressDestruct();
+      this->owner = std::make_unique<Napi::ObjectReference>(Napi::Persistent(owner));
+      this->owner->SuppressDestruct();
       this->raw = raw;
     }
   } else {
@@ -66,6 +66,10 @@ void NodeGitWrapper<Traits>::InitializeFromRaw(cType *raw, bool selfFreeing, Nap
 
 template<typename Traits>
 NodeGitWrapper<Traits>::~NodeGitWrapper() {
+  if (owner) {
+    owner->SuppressDestruct();
+    owner.reset();
+  }
   Unlink();
   if (Traits::isFreeable && selfFreeing) {
     Traits::free(raw);

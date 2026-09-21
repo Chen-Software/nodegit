@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <functional>
+#include <memory>
 #include <unordered_map>
 #include <napi.h>
 
@@ -50,7 +51,7 @@ protected:
 
   // owner of the object, in the memory management sense. only populated
   // when using ownedByThis, and the type doesn't have a dupFunction
-  Napi::ObjectReference owner;
+  std::unique_ptr<Napi::ObjectReference> owner;
 
   // diagnostic count of self-freeing object instances
   thread_local static int SelfFreeingInstanceCount;

@@ -27,7 +27,7 @@ namespace nodegit {
     // Required by Napi::ObjectWrap<T>; never invoked as a JS constructor
     // directly, only as the most-derived base ctor of a generated wrapper.
     TrackerWrap(const Napi::CallbackInfo& info);
-    virtual ~TrackerWrap() = default;
+    virtual ~TrackerWrap();
 
     TrackerWrap(const TrackerWrap &other) = delete;
     TrackerWrap(TrackerWrap &&other) = delete;
