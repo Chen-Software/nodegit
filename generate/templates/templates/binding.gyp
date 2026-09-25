@@ -76,6 +76,32 @@
       ],
 
       "conditions": [
+        ["OS == 'emscripten'", {
+          "product_extension": "js",
+          "cflags": [],
+          "cflags_c": [],
+          "cflags_cc": [],
+          "ldflags": [],
+          "xcode_settings": {
+            "WARNING_CFLAGS": [],
+            "OTHER_CFLAGS": [],
+            "OTHER_CPLUSPLUSFLAGS": [],
+            "OTHER_LDFLAGS": []
+          }
+        }],
+        ["OS == 'wasi'", {
+          "product_extension": "wasm",
+          "cflags": [],
+          "cflags_c": [],
+          "cflags_cc": [],
+          "ldflags": [],
+          "xcode_settings": {
+            "WARNING_CFLAGS": [],
+            "OTHER_CFLAGS": [],
+            "OTHER_CPLUSPLUSFLAGS": [],
+            "OTHER_LDFLAGS": []
+          }
+        }],
         [
           "coverage==1", {
             "cflags": [
