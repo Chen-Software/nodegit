@@ -4,3 +4,9 @@
 [submodule "vendor/http_parser"]
 	path = vendor/http_parser
 	url = https://github.com/nodejs/http-parser
+[submodule "packages/emnapi"]
+	path = packages/emnapi
+	url = https://github.com/toyobayashi/emnapi.git
+[submodule "packages/napi-rs-ts"]
+	path = packages/napi-rs-ts
+	url = https://github.com/napi-rs/package-template.git
