@@ -38,7 +38,10 @@
     "node": ">= 22"
   },
   "dependencies": {
+    "@emnapi/core": "file:packages/emnapi/packages/core",
+    "@emnapi/runtime": "file:packages/emnapi/packages/runtime",
     "@mapbox/node-pre-gyp": "^2.0.0",
+    "emnapi": "file:packages/emnapi/packages/emnapi",
     "fs-extra": "^7.0.0",
     "got": "^14.4.7",
     "json5": "^2.1.0",

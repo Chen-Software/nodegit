@@ -77,6 +77,22 @@
 
       "conditions": [
         [
+          "OS=='emscripten'", {
+            "product_extension": "js",
+            "include_dirs": [
+              "<!(node -p \"require('emnapi').include_dir || ''\")"
+            ]
+          }
+        ],
+        [
+          "OS=='wasi'", {
+            "product_extension": "wasm",
+            "include_dirs": [
+              "<!(node -p \"require('emnapi').include_dir || ''\")"
+            ]
+          }
+        ],
+        [
           "coverage==1", {
             "cflags": [
               "-ftest-coverage",
