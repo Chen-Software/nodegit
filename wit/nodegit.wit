@@ -40,6 +40,17 @@ interface types {
         message: string,
     }
 
+    record signature {
+        name: string,
+        email: string,
+        when: s64,
+        offset: s32,
+    }
+
+    record oid {
+        id: list<u8>,
+    }
+
     resource repository {
         constructor(path: string);
         open: static func(path: string) -> result<repository, git-error>;
@@ -51,6 +62,9 @@ interface types {
         head: func() -> result<reference, git-error>;
         index: func() -> result<index, git-error>;
         odb: func() -> result<odb, git-error>;
+        lookup-commit: func(id: string) -> result<commit, git-error>;
+        lookup-tree: func(id: string) -> result<tree, git-error>;
+        lookup-blob: func(id: string) -> result<blob, git-error>;
     }
 
     resource reference {
@@ -82,13 +96,6 @@ interface types {
         parentcount: func() -> u32;
     }
 
-    record signature {
-        name: string,
-        email: string,
-        when: s64,
-        offset: s32,
-    }
-
     resource tree {
         id: func() -> string;
         entrycount: func() -> u64;
@@ -98,6 +105,7 @@ interface types {
         id: func() -> string;
         rawsize: func() -> u64;
         is-binary: func() -> bool;
+        content: func() -> list<u8>;
     }
 }
 
