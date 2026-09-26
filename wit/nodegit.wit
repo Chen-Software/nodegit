@@ -1,0 +1,112 @@
+package nodegit:wasi@0.28.0;
+
+interface types {
+    enum git-error-code {
+        ok,
+        generic-error,
+        not-found,
+        exists,
+        ambiguous,
+        bufs,
+        user,
+        bare,
+        unbornbranch,
+        unmerged,
+        nonfastforward,
+        invalidspec,
+        conflict,
+        locked,
+        modified,
+        auth,
+        certificate,
+        applied,
+        peel,
+        eof,
+        invalid,
+        uncommitted,
+        directory,
+        mergeconflict,
+        passthrough,
+        iteroff,
+        retry,
+        mismatch,
+        indexdirty,
+        applyfail,
+        owner
+    }
+
+    record git-error {
+        code: git-error-code,
+        message: string,
+    }
+
+    resource repository {
+        constructor(path: string);
+        open: static func(path: string) -> result<repository, git-error>;
+        init: static func(path: string, is-bare: u32) -> result<repository, git-error>;
+        is-bare: func() -> bool;
+        is-empty: func() -> result<bool, git-error>;
+        path: func() -> string;
+        workdir: func() -> option<string>;
+        head: func() -> result<reference, git-error>;
+        index: func() -> result<index, git-error>;
+        odb: func() -> result<odb, git-error>;
+    }
+
+    resource reference {
+        name: func() -> string;
+        target: func() -> option<string>;
+        is-branch: func() -> bool;
+        is-remote: func() -> bool;
+        is-tag: func() -> bool;
+    }
+
+    resource index {
+        add-bypath: func(path: string) -> result<_, git-error>;
+        remove-bypath: func(path: string) -> result<_, git-error>;
+        write: func() -> result<_, git-error>;
+        entrycount: func() -> u64;
+    }
+
+    resource odb {
+        exists: func(oid: string) -> bool;
+    }
+
+    resource commit {
+        id: func() -> string;
+        message: func() -> option<string>;
+        summary: func() -> option<string>;
+        time: func() -> s64;
+        author: func() -> signature;
+        committer: func() -> signature;
+        parentcount: func() -> u32;
+    }
+
+    record signature {
+        name: string,
+        email: string,
+        when: s64,
+        offset: s32,
+    }
+
+    resource tree {
+        id: func() -> string;
+        entrycount: func() -> u64;
+    }
+
+    resource blob {
+        id: func() -> string;
+        rawsize: func() -> u64;
+        is-binary: func() -> bool;
+    }
+}
+
+world nodegit {
+    import wasi:filesystem/types@0.2.0;
+    import wasi:clocks/wall-clock@0.2.0;
+    import wasi:random/random@0.2.0;
+
+    import types;
+
+    export types;
+}
