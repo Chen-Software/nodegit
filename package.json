@@ -39,6 +39,7 @@
   },
   "dependencies": {
     "@mapbox/node-pre-gyp": "^2.0.0",
+    "emnapi": "file:packages/emnapi/packages/emnapi",
     "fs-extra": "^7.0.0",
     "got": "^14.4.7",
     "json5": "^2.1.0",
@@ -97,6 +98,8 @@
     "mocha": "mocha --expose-gc test/runner test/tests --timeout 15000",
     "mochaDebug": "mocha --expose-gc --inspect-brk test/runner test/tests --timeout 15000",
     "postinstall": "node lifecycleScripts/postinstall",
+    "build:wasm:emscripten": "node generate && emmake node-gyp rebuild --arch=wasm32 --nodedir=./node_modules/emnapi -- -DOS=emscripten",
+    "build:wasm:wasi": "node generate && node-gyp rebuild --arch=wasm32 --nodedir=./node_modules/emnapi -- -DOS=wasi",
     "rebuild": "node generate && node-gyp configure build",
     "rebuildDebug": "node generate && node-gyp configure --debug build",
     "recompile": "node-gyp configure build",

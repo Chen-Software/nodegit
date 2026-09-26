@@ -219,6 +219,30 @@
               "-L/QOpenSys/pkgs/lib"
             ]
           }
+        ],
+        [
+          "OS=='emscripten'", {
+            "product_extension": "js",
+            "include_dirs": [
+              "node_modules/emnapi/include/node"
+            ],
+            "libraries": [
+              "-L<(module_root_dir)/node_modules/emnapi/lib/wasm32-emscripten",
+              "-lemnapi"
+            ]
+          }
+        ],
+        [
+          "OS=='wasi'", {
+            "product_extension": "wasm",
+            "include_dirs": [
+              "node_modules/emnapi/include/node"
+            ],
+            "libraries": [
+              "-L<(module_root_dir)/node_modules/emnapi/lib/wasm32-wasip1-threads-wasi-sdk-34",
+              "-lemnapi-mt"
+            ]
+          }
         ]
       ]
     }
